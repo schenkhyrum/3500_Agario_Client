@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <ItemGroup>
+<<<<<<< HEAD
+=======
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+>>>>>>> master
+    <ProjectReference Include="..\Model\Model.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+<<<<<<< HEAD
+    <Reference Include="Networking">
+      <HintPath>..\libs\Networking.dll</HintPath>
+=======
+    <Reference Include="Logger">
+      <HintPath>..\..\..\Lab_11_ChatClientServer\lib\Logger.dll</HintPath>
+    </Reference>
+    <Reference Include="Networking">
+      <HintPath>..\..\..\Lab_11_ChatClientServer\lib\Networking.dll</HintPath>
+>>>>>>> master
+    </Reference>
+  </ItemGroup>
+
+</Project>

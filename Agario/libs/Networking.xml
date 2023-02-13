@@ -1,0 +1,194 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Networking</name>
+    </assembly>
+    <members>
+        <member name="T:NetworkingNS.Networking">
+            <summary>
+            CLIENT 
+            
+            These helper methods are for use by the client when communicating to a SERVER
+            </summary>
+            <summary>
+            General Methods associated with the Overall Networking Package go here.
+            </summary>
+            <summary>
+            SERVER related code.
+            
+            Static helper methods for client server communication.
+            
+            </summary>
+        </member>
+        <member name="M:NetworkingNS.Networking.Connect_to_Server(System.Action{NetworkingNS.Preserved_Socket_State},System.String)">
+            <summary>
+            Create a network connection to another compute (i.e., the server)
+            </summary>
+            <param name="action"> the function to call when data is received on the communication channel</param>
+            <param name="host_name">    server to connect to </param>
+            <returns>true is successful</returns>
+        </member>
+        <member name="M:NetworkingNS.Networking.Connected_to_Server(System.IAsyncResult)">
+            <summary>
+            This function is executed after the remote site acknowledges the connect request
+            </summary>
+            <param name="ar"> FIXME:</param>
+        </member>
+        <member name="M:NetworkingNS.Networking.Await_Initial_Data_from_Server(NetworkingNS.Preserved_Socket_State)">
+            <summary>
+            Set the socket to listen for data and call the callback when data arrives
+            </summary>
+            <param name="state"> The socket state object associated with this channel</param>
+        </member>
+        <member name="M:NetworkingNS.Networking.ReceiveCallback(System.IAsyncResult)">
+            <summary>
+            Characters have arrived on the socket.
+            
+             (1) read the characters and put them in the state string builder
+             (2) call the saved function (on_data_received_handler) allowing the client to deal with this data
+             (3) prepare to receive more data
+             
+             (*) if the server disconnects, handle this case.
+             
+            
+            FIXME: isn't there a race condition here between client in this thread
+                   and the client as part of the clients array in the heartbeat thread?
+            
+            </summary>
+            <param name="ar"> 
+            This is the Preserved_Socket_State that is stored with the callback when
+            the initial BeginReceive is called.
+            </param>
+        </member>
+        <member name="F:NetworkingNS.Networking._logger">
+            <summary>
+            Messages sent to the logger (for debug/development output purposes) will be "echoed" to the appropriate
+            output channels.
+            </summary>
+        </member>
+        <member name="F:NetworkingNS.Networking.log_name">
+            <summary>
+            For use in the log output.  Limit to 6 characters for alignment
+            </summary>
+        </member>
+        <member name="F:NetworkingNS.Networking.DEFAULT_PORT">
+            <summary>
+            The default port this program is running on
+            </summary>
+        </member>
+        <member name="M:NetworkingNS.Networking.await_more_data(NetworkingNS.Preserved_Socket_State)">
+            <summary>
+             if you need more data, call this
+            </summary>
+            <param name="state"></param>
+        </member>
+        <member name="M:NetworkingNS.Networking.Send(System.Net.Sockets.Socket,System.String)">
+            <summary>
+            Send a string over the socket
+            </summary>
+            <param name="socket"> where to send the data</param>
+            <param name="message"> a string representing a full message (note a \n will be appended automatically)</param>
+            <returns> true if send went through, false if socket closed</returns>
+        </member>
+        <member name="M:NetworkingNS.Networking.SendCallback(System.IAsyncResult)">
+            <summary>
+            If we wanted to do something explicit after the send has completed we would do it here.
+            </summary>
+            <param name="ar"></param>
+        </member>
+        <member name="M:NetworkingNS.Networking.Server_Create_Connection_Listener(System.Action{NetworkingNS.Preserved_Socket_State})">
+             <summary>
+             This is the "listening loop" code. 
+            
+                1) wait for an incoming request to the server
+                2) create a new thread and socket to handle it
+                3) return to stage 1
+             </summary>
+             <param name="call_this"> the function (provided by server) to call when a new connection is made </param>
+        </member>
+        <member name="M:NetworkingNS.Networking.Accept_a_New_Client(System.IAsyncResult)">
+            <summary>
+            Handles the case where the server has received a new connection request from a client
+            </summary>
+            <param name="ar"> must contain a tuple with 1: a callback so the server can update it's records, and 2) the socket</param>
+        </member>
+        <member name="T:NetworkingNS.Preserved_Socket_State">
+            <summary>
+            The Preserved Socket State object stores:
+            1) the socket for communication
+            2) the buffer that is read into
+            3) a string builder object to concatenate multiple messages
+            4) a unique identifier that can be used by this channel to identify itself.
+            5) a "on_data_received_handler" call back method that is used to inform the "host" that data is available
+            </summary>
+        </member>
+        <member name="P:NetworkingNS.Preserved_Socket_State.socket">
+            <summary>
+            connection between client and server
+            </summary>
+        </member>
+        <member name="F:NetworkingNS.Preserved_Socket_State.BufferSize">
+            <summary>
+             Maximum Buffer Size
+            </summary>
+        </member>
+        <member name="F:NetworkingNS.Preserved_Socket_State.buffer">
+            <summary>
+            Location to save currently read data
+            </summary>
+        </member>
+        <member name="F:NetworkingNS.Preserved_Socket_State.sb">
+            <summary>
+            Overall Message "so far".  If a new line is found, then we have a complete message, if not, a partial message
+            </summary>
+        </member>
+        <member name="P:NetworkingNS.Preserved_Socket_State.Message">
+            <summary>
+            The most recent message (defined by the protocol_divider character) that has been
+            completely read by this socket.
+            </summary>
+        </member>
+        <member name="F:NetworkingNS.Preserved_Socket_State.error_message">
+            <summary>
+            Last error condition message - FIXME: used to present error message in GUI
+            </summary>
+        </member>
+        <member name="F:NetworkingNS.Preserved_Socket_State.error_occured">
+            <summary>
+            True if an error occurred during the previous heartbeat
+            </summary>
+        </member>
+        <member name="F:NetworkingNS.Preserved_Socket_State.id">
+            <summary>
+            The unique identifier associated with this communication channel.
+            </summary>
+        </member>
+        <member name="F:NetworkingNS.Preserved_Socket_State.protocol_divider">
+            <summary>
+            Data received on this socket is not considered a "full" message until
+            one of these characters is found.
+            </summary>
+        </member>
+        <member name="F:NetworkingNS.Preserved_Socket_State.on_data_received_handler">
+            <summary>
+            The on_data_received_handler function is called when a full data message is received
+            by the socket. A "FULL" message is defined by the protocol divider character which
+            defaults to the new line but can be set.
+            
+            This technique is used so the network code can be generic to any situation.
+            </summary>
+        </member>
+        <member name="M:NetworkingNS.Preserved_Socket_State.#ctor(System.Net.Sockets.Socket)">
+            <summary>
+            Construct a preserved socket state object.
+            </summary>
+            <param name="socket"> the socket communication channel </param>
+        </member>
+        <member name="M:NetworkingNS.Preserved_Socket_State.Has_More_Data">
+            <summary>
+            Return true if more data is already available!
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
